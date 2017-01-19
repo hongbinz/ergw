@@ -229,8 +229,8 @@ get_context_from_req(_, _, Context) ->
 update_context_from_gtp_req(Request, Context) ->
     maps:fold(fun get_context_from_req/3, Context, Request).
 
-dp_args(#context{ms_v4 = {MSv4,_}}) ->
-    MSv4.
+dp_args(#context{vrf = VRF, ms_v4 = {MSv4,_}}) ->
+    {vrf, VRF, MSv4}.
 
 dp_create_pdp_context(Context) ->
     Args = dp_args(Context),

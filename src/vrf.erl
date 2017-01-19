@@ -26,6 +26,8 @@
 -define(IS_IPv4(X), (is_tuple(X) andalso tuple_size(X) == 4)).
 -define(IS_IPv6(X), (is_tuple(X) andalso tuple_size(X) == 8)).
 
+-define(DefaultOptions, [{pools, undefined}]).
+
 %%====================================================================
 %% API
 %%====================================================================
@@ -58,7 +60,8 @@ with_vrf(VRF, Fun) when is_atom(VRF), is_function(Fun, 1) ->
 
 validate_options(Options) ->
     lager:debug("VRF Options: ~p", [Options]),
-    maps:from_list(ergw_config:validate_options(fun validate_option/2, Options)).
+    maps:from_list(ergw_config:validate_options(
+		     fun validate_option/2, Options, ?DefaultOptions)).
 
 validate_option(pools, Value) when is_list(Value) ->
     Value;
@@ -85,8 +88,12 @@ init([Name, Opts]) ->
     lager:debug("IPv4Pools ~p", [IPv4pools]),
     lager:debug("IPv6Pools ~p", [IPv6pools]),
 
-    VrfOpts = maps:without([pools], Opts),
-    State = #state{ip4_pools = IPv4pools, ip6_pools = IPv6pools, opts = VrfOpts},
+    VrfOpts = maps:without([pools, name], Opts),
+    State = #state{
+	       ip4_pools = IPv4pools,
+	       ip6_pools = IPv6pools,
+	       opts = VrfOpts
+	      },
     {ok, State}.
 
 handle_call(get_opts, _From, #state{opts = Opts} = State) ->

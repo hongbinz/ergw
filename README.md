@@ -4,6 +4,8 @@ erGW - 3GPP GGSN and PDN-GW in Erlang
 
 This is a 3GPP GGSN and PDN-GW implemented in Erlang. It strives to eventually support all the functionality as defined by [3GPP TS 23.002](https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=728) Section 4.1.3.1 for the GGSN and Section 4.1.4.2.2 for the PDN-GW.
 
+*NOTE*: this branch requires a Kernel with an updated GTP kernel API, see http://marc.info/?l=linux-netdev&m=148517324727046&w=2 for patches. As of Mon Jan 23 16:22:06 CET 2017 those updates have been submitted for review.
+
 IMPLEMENTED FEATURES
 --------------------
 

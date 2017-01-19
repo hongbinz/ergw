@@ -14,6 +14,7 @@
 	  name            :: term(),
 	  type            :: 'gtp-c' | 'gtp-u',
 	  pid             :: pid(),
+	  global_name     :: atom(),
 	  restart_counter :: integer(),
 	  ip              :: inet:ip_address()
 	 }).

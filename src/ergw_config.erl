@@ -89,8 +89,6 @@ validate_socket_option(name, Value) when is_atom(Value) ->
 validate_socket_option(type, Value)
   when Value == 'gtp-c'; Value == 'gtp-u' ->
     Value;
-validate_socket_option(node, Value) when is_atom(Value) ->
-    Value;
 validate_socket_option(ip, Value)
   when is_tuple(Value) andalso
        (tuple_size(Value) == 4 orelse tuple_size(Value) == 8) ->
