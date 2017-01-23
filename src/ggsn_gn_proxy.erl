@@ -114,34 +114,32 @@ validate_context_option(proxy_data_paths, Value) when is_list(Value), Value /= [
 validate_context_option(Opt, Value) ->
     throw({error, {options, {Opt, Value}}}).
 
-validate_context({Name, Opts0})
-  when is_binary(Name), is_list(Opts0) ->
+validate_context({Name, Options})
+  when is_binary(Name), is_list(Options) ->
     Defaults = [{proxy_sockets,    []},
 		{proxy_data_paths, []}],
-    Opts1 = lists:ukeymerge(1, lists:keysort(1, Opts0), lists:keysort(1, Defaults)),
     Opts = maps:from_list(ergw_config:validate_options(
-			    fun validate_context_option/2, Opts1)),
+			    fun validate_context_option/2, Options, Defaults)),
     {Name, Opts};
-validate_context({Name, Opts0})
-  when is_binary(Name), is_map(Opts0) ->
+validate_context({Name, Options})
+  when is_binary(Name), is_map(Options) ->
     Defaults = #{proxy_sockets    => [],
 		 proxy_data_paths => []},
-    Opts1 = maps:merge(Defaults, Opts0),
-    Opts = maps:from_list(ergw_config:validate_options(
-			    fun validate_context_option/2, maps:to_list(Opts1))),
+    Opts = ergw_config:validate_options(
+	     fun validate_context_option/2, Options, Defaults),
     {Name, Opts};
 validate_context(Value) ->
     throw({error, {options, {contexts, Value}}}).
 
-validate_options(Opts0) ->
-    lager:debug("GGSN Gn/Gp Options: ~p", [Opts0]),
+validate_options(Options) ->
+    lager:debug("GGSN Gn/Gp Options: ~p", [Options]),
     Defaults = [{proxy_data_source, gtp_proxy_ds},
 		{proxy_sockets,     []},
 		{proxy_data_paths,  []},
 		{ggsn,              undefined},
 		{contexts,          []}],
-    Opts1 = lists:ukeymerge(1, lists:keysort(1, Opts0), lists:keysort(1, Defaults)),
-    ergw_config:validate_options(fun validate_option/2, Opts1).
+    ergw_config:validate_options(
+      fun validate_option/2, Options, Defaults).
 
 validate_option(proxy_data_source, Value) ->
     case code:ensure_loaded(Value) of

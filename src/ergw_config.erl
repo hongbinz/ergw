@@ -10,7 +10,7 @@
 -compile({parse_transform, cut}).
 
 %% API
--export([load_config/1, validate_options/2]).
+-export([load_config/1, validate_options/2, validate_options/3]).
 
 -define(DefaultOptions, [{plmn_id, {<<"001">>, <<"01">>}},
 			 {sockets, []},
@@ -35,6 +35,13 @@ load_config(Config0) ->
 %%% Options Validation
 %%%===================================================================
 
+validate_options(Fun, Opts0, Defaults) when is_list(Opts0), is_list(Defaults) ->
+    Opts = lists:ukeymerge(1, lists:keysort(1, proplists:unfold(Opts0)), lists:keysort(1, Defaults)),
+    validate_options(Fun, Opts);
+validate_options(Fun, Opts0, Defaults) when is_map(Opts0), is_map(Defaults) ->
+    Opts = maps:merge(Defaults, Opts0),
+    maps:from_list(validate_options(Fun, maps:to_list(Opts))).
+
 validate_options(_Fun, []) ->
         [];
 validate_options(Fun, [Opt | Tail]) when is_atom(Opt) ->
@@ -43,8 +50,7 @@ validate_options(Fun, [{Opt, Value} | Tail]) ->
         [{Opt, Fun(Opt, Value)} | validate_options(Fun, Tail)].
 
 validate_config(Options) ->
-    Opts = lists:ukeymerge(1, lists:keysort(1, Options), lists:keysort(1, ?DefaultOptions)),
-    validate_options(fun validate_option/2, Opts).
+    validate_options(fun validate_option/2, Options, ?DefaultOptions).
 
 validate_option(plmn_id, {MCC, MNC} = Value) ->
     case validate_mcc_mcn(MCC, MNC) of
